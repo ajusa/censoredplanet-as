@@ -28,6 +28,6 @@ FNR==1{FNUM++}
 FNUM == 1 {total[$3 $1] = $5}
 FNUM == 2 {toEnglish[$1] = $2}
 END {
-    for (country in fh) print toEnglish[country], country, countries[country]#, work[country]
-    # for (country in countries) print countries[country], country
+    # for (country in fh) print toEnglish[country], country, countries[country]#, work[country]
+    for (country in countries) print toEnglish[country], country, countries[country]#, work[country]
 }
