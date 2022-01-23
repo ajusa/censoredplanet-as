@@ -1,6 +1,6 @@
 #!/bin/awk -f
 BEGIN{
-    FS="\t"; OFS="\t"
+    OFS="\t"
     fh["AZ"]
     fh["BH"]
     fh["BY"]
@@ -25,7 +25,7 @@ BEGIN{
 } 
 !x[$0]++ && FNUM == 3 {countries[$2] += total[$2 $1]; total[$2 $1] = 0; work[$2] = work[$2] " " $1}
 FNR==1{FNUM++}
-FNUM == 1 {total[$3 $1] = $5}
+FNUM == 1 {total[$2 $1] = $3}
 FNUM == 2 {toEnglish[$1] = $2}
 END {
     # for (country in fh) print toEnglish[country], country, countries[country]#, work[country]

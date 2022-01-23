@@ -28,3 +28,16 @@ cat domains.txt | zdns alookup -result-verbosity short --name-servers=1.1.1.1 > 
 grep -o '[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}' output.json | sort -u > ips.tx
 ```
 The first uses zdns to grab all of the domains line by line in `domains.txt`, while the second command grabs just the IP addresses and remove duplicates.
+
+
+# Getting Estimated Coverage from APNIC with a list of IPs
+
+For this, you'll need [Nim 1.6](https://nim-lang.org/install.html). Run `nimble install https://github.com/z-------------/nim-mmdb` to get the MMDB file reader. Also, make sure you have GeoLite2-Country.mmdb and GeoLite2-ASN.mmdb in the same directory as the `main.nim` file. Run `nim c -d:release main.nim` to generate the `main` executable. This takes IP addresses from the arguments and prints out the AS + country code for the IP if it is found.
+
+To see the coverage from a list of IPs, do the following:
+```
+cat ips.txt | xargs ./main | ./stats.awk apnic.txt country-codes.tsv - | sort -n -t$'\t' -k3,3 | column -t -s$'\t'
+```
+First bit takes the list of IPs, second runs each IP against `main` to get a list of AS + country pairs, `stats.awk` does the actual summing and math to figure out what the breakdown looks like per country. The last two bits sort based on the percent of country covered. Finally, we use `column` to help pretty print everything. I reccomend piping this into `less` if you want to explore the data. 
+
+While it would have been pretty doable to bundle this all into a standalone Nim program, it wouldn't be as reusable. The context for this development process was that I was doing a lot of adhoc queries and using many different data sources. In that regard, the shell was my best friend for processing tons of data without writing specific programs. Now that the data and process are fixed, converting this to a standalone program (in Go) should be pretty straightforward.
